@@ -1,0 +1,17 @@
+services:
+  baraka-client-web-staging:
+    restart: unless-stopped
+    build:
+      context: .
+      args:
+        ENV: staging
+    image: baraka-client-web-staging:latest
+    container_name: baraka-client-web-staging
+    ports:
+      - "3032:3032"
+    environment:
+      - ENV=staging
+      - TZ=Asia/Tashkent
+      - VITE_ROUTER_HISTORY=hash
+      - VITE_APP_TITLE=Baraka(Test)
+

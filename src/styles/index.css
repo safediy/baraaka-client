@@ -1,0 +1,288 @@
+@charset "UTF-8";
+@import './variables.css';
+@import './element-plus.css';
+@import './vxe-table.css';
+@import '../views/map/css/index.css';
+
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.5s;
+}
+
+.fade-transform-enter {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.layout-logo-fade-enter-active,
+.layout-logo-fade-leave-active {
+  transition: opacity 1.5s;
+}
+
+.layout-logo-fade-enter-from,
+.layout-logo-fade-leave-to {
+  opacity: 0;
+}
+
+/** 自定义 Element Plus 样式 */
+.el-card {
+  background-color: var(--el-bg-color);
+}
+
+@media screen and (max-width: 768px) {
+  .el-pagination .el-pagination__total,
+  .el-pagination .el-pagination__sizes,
+  .el-pagination .el-pagination__jump,
+  .el-pagination .btn-prev,
+  .el-pagination .btn-next {
+    display: none !important;
+  }
+}
+
+/** 自定义 Vxe Table 样式 */
+.vxe-grid--form-wrapper .vxe-form {
+  padding: 10px 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.vxe-grid--toolbar-wrapper .vxe-toolbar {
+  padding: 20px !important;
+}
+
+.vxe-grid--pager-wrapper .vxe-pager {
+  height: 70px !important;
+  padding: 0 20px !important;
+}
+
+@media screen and (max-width: 768px) {
+  .vxe-grid--pager-wrapper .vxe-pager--wrapper .vxe-pager--total,
+  .vxe-grid--pager-wrapper .vxe-pager--wrapper .vxe-pager--sizes,
+  .vxe-grid--pager-wrapper .vxe-pager--wrapper .vxe-pager--jump,
+  .vxe-grid--pager-wrapper .vxe-pager--wrapper .vxe-pager--jump-prev,
+  .vxe-grid--pager-wrapper .vxe-pager--wrapper .vxe-pager--jump-next {
+    display: none !important;
+  }
+}
+
+/** dark 主题下的变量 */
+.dark {
+  /** Layout 相关 */
+  /** Element Plus 相关 */
+}
+
+.dark .app-wrapper .sidebar-container {
+  background-color: var(--el-bg-color);
+}
+
+.dark .app-wrapper .sidebar-container .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.dark .app-wrapper .sidebar-container .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.dark .app-wrapper .sidebar-container .el-menu .el-menu-item.is-active,
+.dark .app-wrapper .sidebar-container .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.dark .app-wrapper .sidebar-container .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.dark .app-wrapper .sidebar-container .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff !important;
+}
+
+.dark .handle-button {
+  background-color: #474747 !important;
+}
+
+.dark .el-popper .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.dark .el-popper .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.dark .el-popper .el-menu .el-menu-item.is-active,
+.dark .el-popper .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.dark .el-popper .el-menu .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.dark .el-popper .el-menu .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff;
+}
+
+.dark .el-popper .el-menu--horizontal {
+  border: none;
+}
+
+/** dark-blue 主题下的变量 */
+.dark-blue {
+  /** Layout 相关 */
+  /** Element Plus 相关 */
+}
+
+.dark-blue .app-wrapper .sidebar-container {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-menu .el-menu-item.is-active,
+.dark-blue .app-wrapper .sidebar-container .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff !important;
+}
+
+.dark-blue .handle-button {
+  background-color: #0044aa !important;
+}
+
+.dark-blue .el-popper .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .el-popper .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .el-popper .el-menu .el-menu-item.is-active,
+.dark-blue .el-popper .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.dark-blue .el-popper .el-menu .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .el-popper .el-menu .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff;
+}
+
+.dark-blue .el-popper .el-menu--horizontal {
+  border: none;
+}
+
+/** 清除浮动 */
+/** 美化原生滚动条 */
+body::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+body::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(144, 147, 153, 0.3333333333);
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(144, 147, 153, 0.4666666667);
+}
+
+body::-webkit-scrollbar-thumb:active {
+  background-color: rgba(144, 147, 153, 0.6);
+}
+
+body::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/** 文本溢出时显示省略号 */
+/** 控制切换主题时的动画效果（只在较新的浏览器上生效，例如 Chrome 111+） */
+::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: 0.5s ease-in clip-animation;
+  mix-blend-mode: normal;
+}
+
+@keyframes clip-animation {
+  from {
+    -webkit-clip-path: circle(0px at var(--v3-theme-x) var(--v3-theme-y));
+    clip-path: circle(0px at var(--v3-theme-x) var(--v3-theme-y));
+  }
+
+  to {
+    -webkit-clip-path: circle(var(--v3-theme-r) at var(--v3-theme-x) var(--v3-theme-y));
+    clip-path: circle(var(--v3-theme-r) at var(--v3-theme-x) var(--v3-theme-y));
+    clip-path: circle(0px at var(--v3-theme-x) var(--v3-theme-y));
+  }
+
+  to {
+    -webkit-clip-path: circle(var(--v3-theme-r) at var(--v3-theme-x) var(--v3-theme-y));
+    clip-path: circle(var(--v3-theme-r) at var(--v3-theme-x) var(--v3-theme-y));
+  }
+}
+
+.app-container {
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  color: var(--v3-body-text-color);
+  background-color: var(--v3-body-bg-color);
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a,
+a:focus,
+a:hover {
+  color: inherit;
+  outline: none;
+  text-decoration: none;
+}
+
+div:focus {
+  outline: none;
+}
+
+/*# sourceMappingURL=index.css.map */

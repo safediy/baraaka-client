@@ -1,0 +1,65 @@
+@charset "UTF-8";
+
+/** dark-blue 主题下的变量 */
+.dark-blue {
+  /** Layout 相关 */
+  /** Element Plus 相关 */
+}
+
+.dark-blue .app-wrapper .sidebar-container {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-menu .el-menu-item.is-active,
+.dark-blue .app-wrapper .sidebar-container .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .app-wrapper .sidebar-container .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff !important;
+}
+
+.dark-blue .handle-button {
+  background-color: #0044aa !important;
+}
+
+.dark-blue .el-popper .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .el-popper .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .el-popper .el-menu .el-menu-item.is-active,
+.dark-blue .el-popper .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.dark-blue .el-popper .el-menu .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.dark-blue .el-popper .el-menu .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff;
+}
+
+.dark-blue .el-popper .el-menu--horizontal {
+  border: none;
+}
+
+/*# sourceMappingURL=index.css.map */

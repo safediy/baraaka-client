@@ -1,0 +1,26 @@
+[build]
+  command = "pnpm build:stage"
+  functions = "netlify/functions"
+  publish = "dist"
+
+[build.environment]
+  VITE_BASE_API = "/api"  # MUHIM: Bu yerda to'liq URL emas, /api bo'lishi kerak
+  VITE_GOOGLE_API_KEY = "AIzaSyC00zTG4ZRy4mNflkNoyzCgjnxT-z2tkP4"
+  VITE_NODE_ENV = "production"
+  VITE_ROUTER_HISTORY = "hash"
+  VITE_PUBLIC_PATH = "/"
+  VITE_BOT_TYPE = "B2C"
+  VITE_TELEGRAM_API_SECRET = "8oI2iGZn6DscIUJUshO25QbOzBvJ"
+  VITE_SMS_SECRET_KEY = "0ad99cca986e2543751e88d0d063bdc4"
+
+# Izohdan chiqaramiz va pastga, alohida blok qilib yozamiz
+[[redirects]]
+  from = "/api/*"
+  to = "https://client.yiwuas.com/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

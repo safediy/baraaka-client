@@ -1,0 +1,65 @@
+@charset "UTF-8";
+
+/** dark 主题下的变量 */
+.dark {
+  /** Layout 相关 */
+  /** Element Plus 相关 */
+}
+
+.dark .app-wrapper .sidebar-container {
+  background-color: var(--el-bg-color);
+}
+
+.dark .app-wrapper .sidebar-container .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.dark .app-wrapper .sidebar-container .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.dark .app-wrapper .sidebar-container .el-menu .el-menu-item.is-active,
+.dark .app-wrapper .sidebar-container .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.dark .app-wrapper .sidebar-container .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.dark .app-wrapper .sidebar-container .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff !important;
+}
+
+.dark .handle-button {
+  background-color: #474747 !important;
+}
+
+.dark .el-popper .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.dark .el-popper .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.dark .el-popper .el-menu .el-menu-item.is-active,
+.dark .el-popper .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.dark .el-popper .el-menu .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.dark .el-popper .el-menu .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff;
+}
+
+.dark .el-popper .el-menu--horizontal {
+  border: none;
+}
+
+/*# sourceMappingURL=index.css.map */

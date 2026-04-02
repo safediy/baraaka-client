@@ -1,0 +1,30 @@
+services:
+  baraka-client-web-prod:
+    restart: unless-stopped
+    build:
+      context: .
+      args:
+        ENV: production
+    image: baraka-client-web-prod:latest
+    container_name: baraka-client-web-prod
+    ports:
+      - "3033:3033"
+#    env_file:
+#      - .env.staging
+    environment:
+      - NODE_ENV=production
+      - TZ=Asia/Tashkent
+      - VITE_ROUTER_HISTORY=hash
+      - VITE_APP_TITLE=Baraka
+#    networks:
+#      - app-network
+#    command: ["npm", "run", "start:prod"]
+#    volumes:
+#      - app-data:/usr/src/app
+##
+#volumes:
+#  app-data:
+#  networks:
+#    app-network:
+#      driver: bridge
+

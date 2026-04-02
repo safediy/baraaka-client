@@ -1,0 +1,30 @@
+@charset "UTF-8";
+
+/** Element Plus 相关 */
+.el-popper .el-menu {
+  background-color: var(--el-bg-color);
+}
+
+.el-popper .el-menu .el-menu-item {
+  background-color: var(--el-bg-color);
+}
+
+.el-popper .el-menu .el-menu-item.is-active,
+.el-popper .el-menu .el-menu-item:hover {
+  background-color: var(--el-bg-color-overlay);
+  color: #ffffff;
+}
+
+.el-popper .el-menu .el-sub-menu__title {
+  background-color: var(--el-bg-color);
+}
+
+.el-popper .el-menu .el-sub-menu.is-active > .el-sub-menu__title {
+  color: #ffffff;
+}
+
+.el-popper .el-menu--horizontal {
+  border: none;
+}
+
+/*# sourceMappingURL=element-plus.css.map */

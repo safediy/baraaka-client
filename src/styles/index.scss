@@ -1,0 +1,284 @@
+// 全局 CSS 变量
+@import './variables.css';
+// Transition
+@import './transition.scss';
+// Element Plus
+@import './element-plus.css';
+@import './element-plus.scss';
+// Vxe Table
+@import './vxe-table.css';
+@import './vxe-table.scss';
+// 注册多主题
+@import './theme/register.scss';
+// Mixins
+@import './mixins.scss';
+// View Transition
+@import './view-transition.scss';
+
+@import '../views/map/css/index.css';
+
+/* src/assets/fonts/_fonts.scss */
+
+/* src/assets/fonts/inter.scss */
+
+@font-face {
+  font-family: 'InterA';
+  src: url('@/assets/fonts/Inter/static/Inter_18pt-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('@/assets/fonts/Inter/static/Inter_18pt-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('@/assets/fonts/Inter/static/Inter_18pt-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+// @forward 'element-plus/theme-chalk/src/common/var.scss' with ($font-family: ('': "'Inter', sans-serif",
+//   ));
+
+:root {
+  /* Element Plus barcha fontlarini Inter ga o'zgartiradi */
+  --el-font-family: 'InterA', sans-serif;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif !important;
+  -webkit-tap-highlight-color: transparent !important;
+  // outline: none !important;
+}
+
+.app-container {
+  padding: 0;
+}
+
+.client-container {
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.content-container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.el-drawer__header {
+  padding: 35px 0 20px !important;
+  position: sticky;
+  width: 100% !important;
+  top: 0;
+  z-index: 10;
+  background-color: #fff;
+  margin-bottom: 5px !important;
+}
+
+.modal-map .el-drawer__header {
+  padding: 35px 0 14px !important;
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: none;
+}
+
+.el-drawer__body {
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  color: var(--v3-body-text-color);
+  background-color: var(--v3-body-bg-color);
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'InterA', sans-serif !important;
+  @extend %scrollbar;
+}
+
+.el-button,
+.el-input,
+.el-select,
+.el-table,
+.el-tabs {
+  font-family: 'InterA', sans-serif !important;
+}
+
+#app {
+  height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a,
+a:focus,
+a:hover {
+  color: inherit;
+  outline: none;
+  text-decoration: none;
+
+  &::after {
+    display: none;
+  }
+}
+
+.el-dialog.is-fullscreen {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #000 !important;
+}
+
+a:hover {
+  opacity: 0.7;
+  transition: opacity 0.3s ease-in-out;
+}
+
+div:focus {
+  outline: none;
+}
+
+.homeDelivery .el-drawer__body {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.el-button {
+  border-radius: 16px !important;
+
+  @media only screen and (max-width: 770px) {
+    border-radius: 32px !important;
+  }
+}
+
+.el-dialog {
+  padding-top: 0 !important;
+}
+
+.el-dialog__header {
+  padding-top: 20px !important;
+}
+
+.el-button + .el-button {
+  margin: 0 !important;
+}
+
+.el-image__error {
+  display: none !important;
+}
+
+.el-dialog__header .el-dialog__title {
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  color: #111827 !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.el-drawer__header .el-drawer__title {
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  color: #111827 !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.el-dialog__headerbtn {
+  top: 8px;
+  right: 6px;
+  z-index: 10;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  border-radius: 50% !important;
+  background-color: #f3f4f6 !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: #9ca3af !important;
+}
+
+.el-drawer__header .el-drawer__close {
+  border-radius: 50% !important;
+  background-color: #f3f4f6 !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: #9ca3af !important;
+}
+
+.el-overlay-dialog {
+  margin: 0 12px;
+
+  // overflow: visible;
+  &::-webkit-scrollbar {
+    width: 0px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af #f3f4f6;
+
+  &::-webkit-scrollbar {
+    width: 4px !important;
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #9ca3af;
+    border-radius: 10px;
+    border: 1px solid #f3f4f6;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
+  }
+}
+
+.el-button.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
