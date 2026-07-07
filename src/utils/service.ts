@@ -85,21 +85,28 @@ function createRequest(service: AxiosInstance) {
     // Process Telegram data
     const timestamp = Math.floor(Date.now() / 1000)
     const telegramUser = parseInitDataTelegram(webApp.initData)
+    // CLI-01 SECURITY (architectural): VITE_* vars are inlined into the browser
+    // bundle at build time. This HMAC secret is therefore shipped to every client
+    // and is NOT actually secret. Anyone can extract it and forge x-apikey headers.
+    // TRUE FIX (backend follow-up): move HMAC signing to a backend signing endpoint
+    // so the secret never leaves the server. MANUAL ACTION REQUIRED: rotate
+    // VITE_TELEGRAM_API_SECRET once signing is server-side (the current value is
+    // already exposed in prior bundles). Tracked in docs/security.
     const apiSecret = import.meta.env.VITE_TELEGRAM_API_SECRET
     const headers = telegramUser
       ? {
-        source: 'TELEGRAM',
-        // bot_type: import.meta.env.VITE_BOT_TYPE,
-        'x-chat-id': telegramUser?.id,
-        'x-timestamp': timestamp,
-        'x-apikey': generateHmacHash(`${telegramUser?.id}:${timestamp}`, apiSecret),
-        'Content-Type': 'application/json'
-      }
+          source: 'TELEGRAM',
+          // bot_type: import.meta.env.VITE_BOT_TYPE,
+          'x-chat-id': telegramUser?.id,
+          'x-timestamp': timestamp,
+          'x-apikey': generateHmacHash(`${telegramUser?.id}:${timestamp}`, apiSecret),
+          'Content-Type': 'application/json'
+        }
       : {
-        Authorization: token ? `Bearer ${token}` : undefined,
-        'Content-Type': 'application/json',
-        source: 'CLIENT_WEB'
-      }
+          Authorization: token ? `Bearer ${token}` : undefined,
+          'Content-Type': 'application/json',
+          source: 'CLIENT_WEB'
+        }
     const defaultConfig = {
       headers,
       timeout: 100000,

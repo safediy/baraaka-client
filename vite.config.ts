@@ -72,18 +72,22 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
         }
       }
     },
-    /** 混淆器 */
-    // esbuild:
-    //   mode === 'production'
-    //     ? undefined
-    //     : {
-    //         /** 打包时移除 console.log */
-    //         pure: ['console.log'],
-    //         /** 打包时移除 debugger */
-    //         drop: ['debugger'],
-    //         /** 打包时移除所有注释 */
-    //         legalComments: 'none'
-    //       },
+    /**
+     * CLI-09: Strip console.log and debugger from production builds so PII / debug
+     * output never ships to end users' browsers. In non-production modes we keep
+     * them for local debugging.
+     */
+    esbuild:
+      mode === 'production'
+        ? {
+            /** 打包时移除 console.log */
+            pure: ['console.log'],
+            /** 打包时移除 debugger */
+            drop: ['debugger'],
+            /** 打包时移除所有注释 */
+            legalComments: 'none'
+          }
+        : undefined,
     /** Vite 插件 */
     plugins: [
       vue(),

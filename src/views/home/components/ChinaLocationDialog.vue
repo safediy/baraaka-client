@@ -25,10 +25,16 @@ const { data, isLoading } = useGetChinaAddress({
 
 const addressAvailable = computed(() => !!data.value)
 
-const address = computed(() => data.value?.address || '')
+// CLI-05: address/postalCode come from the backend and are rendered via v-html,
+// so a compromised/malicious value could inject script (stored XSS). Sanitize the
+// HTML before it reaches v-html. Only formatting tags are kept; scripts/handlers
+// are stripped by DOMPurify.
+const SANITIZE_OPTIONS = { ALLOWED_TAGS: ['b', 'br', 'strong', 'span', 'p', 'div'], ALLOWED_ATTR: [] }
+
+const address = computed(() => DOMPurify.sanitize(data.value?.address || '', SANITIZE_OPTIONS))
 const postalCode = computed(() => {
   if (!data.value?.postalCode) return ''
-  return data.value.postalCode.slice(12)
+  return DOMPurify.sanitize(data.value.postalCode.slice(12), SANITIZE_OPTIONS)
 })
 
 const show = () => {

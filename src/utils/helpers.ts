@@ -22,6 +22,13 @@ export function generateHmacHash(access: string, secretKey: string): string {
 }
 
 export function generateHmacHashKey(verifyCode: number) {
+  // CLI-02 SECURITY (architectural): VITE_* vars are inlined into the browser
+  // bundle at build time, so VITE_SMS_SECRET_KEY is shipped to every client and is
+  // NOT actually secret. An attacker can extract it and forge the SMS _csrf hash.
+  // TRUE FIX (backend follow-up): perform this HMAC signing on a backend endpoint
+  // so the secret never reaches the browser. MANUAL ACTION REQUIRED: rotate
+  // VITE_SMS_SECRET_KEY once signing is server-side (current value already exposed
+  // in prior bundles). Tracked in docs/security.
   const appKey = import.meta.env.VITE_SMS_SECRET_KEY as string
 
   const unixtime = Math.floor(Date.now() / 1000)

@@ -60,7 +60,7 @@ export const useUserStore = defineStore('user', () => {
     const data: any = await clientService.updateDetails(params)
     username.value = data.name
     phone.value = data.phoneNumber
-    console.log(data)
+    // CLI-07: do not log profile response (contains PII: name, phone).
   }
 
   /** 模拟角色变化 */

@@ -23,8 +23,8 @@ const isResendVisible = ref(false)
 let interval: any = null
 const isRegister = ref(false)
 
-watch(otpInput, (newValue) => {
-  console.log('OTP yangilandi:', newValue)
+watch(otpInput, () => {
+  // CLI-07: do not log the OTP value (sensitive credential).
 })
 
 const formattedTimer = computed(() => {

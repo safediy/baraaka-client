@@ -125,8 +125,7 @@ export function getConfirmPasswordValidator(t: any, formData: any) {
     { required: true, message: t('confirmPasswordRequired'), trigger: 'blur' },
     {
       validator: (rule: any, value: any, callback: any) => {
-        console.log(value)
-        console.log(formData.newPassword)
+        // CLI-07: do not log passwords (PII/credential leakage).
         if (value !== formData.newPassword) {
           callback(new Error(t('passwordMismatch')))
         } else {

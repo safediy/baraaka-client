@@ -11,8 +11,15 @@ export const getTokenLocal = () => {
   return localStorage.getItem(CacheKey.TOKEN)
 }
 
+// CLI-04: Harden the auth-token cookie against interception (secure) and CSRF
+// (sameSite=strict). NOTE: this is a mitigation, not the real fix. A JS-set cookie
+// can never be HttpOnly, and the token is also mirrored into localStorage
+// (setTokenLocal / getTokenLocal), which is fully readable by any XSS.
+// TRUE FIX (backend follow-up): the server should issue the JWT as a
+// Secure + HttpOnly + SameSite cookie via Set-Cookie, and the client should stop
+// storing the JWT in localStorage entirely.
 export const setToken = (token: string) => {
-  Cookies.set(CacheKey.TOKEN, token)
+  Cookies.set(CacheKey.TOKEN, token, { secure: true, sameSite: 'strict' })
 }
 
 export const setTokenLocal = (token: string) => {

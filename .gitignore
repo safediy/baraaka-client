@@ -6,8 +6,12 @@ dist
 dist-ssr
 .eslintcache
 
-# Local env files
+# Local env files (CLI-01/02/03: secrets must never be committed)
 *.local
+.env
+.env.*
+# Keep the checked-in template with placeholder values
+!.env.example
 
 # Logs
 logs
@@ -29,7 +33,6 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
-.env*
 
 # Use the PNPM
 package-lock.json

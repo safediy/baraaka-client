@@ -12,6 +12,12 @@ import { removeConfigLayout } from '@/utils/cache/local-storage'
 const { setTitle } = useTitle()
 
 NProgress.configure({ showSpinner: false })
+// CLI-06 SECURITY: These router guards are a UX/navigation convenience ONLY. They
+// run entirely in the browser and can be bypassed by any user (dev tools, direct
+// API calls, editing the bundle). They must NOT be treated as an authorization
+// boundary. Every protected resource/action must be independently authorized by
+// the backend on each request; the token/role checks below only decide what the
+// SPA renders, not what the user is actually allowed to do.
 let isError = false
 router.beforeEach(async (to, _from, next) => {
   NProgress.start()

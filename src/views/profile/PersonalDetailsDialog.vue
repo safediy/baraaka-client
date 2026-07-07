@@ -31,7 +31,7 @@ const show = (): void => {
 }
 
 const handleSave = () => {
-  console.log('formdata', formData.value)
+  // CLI-07: do not log form data (contains PII: name, phone, address).
   isLoading.value = true
   formRef.value?.validate(async (valid: boolean) => {
     if (!valid) {
