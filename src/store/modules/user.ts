@@ -7,6 +7,7 @@ import { getToken, removeToken, setToken } from '@/utils/cache/cookies'
 import { resetRouter } from '@/router'
 import { loginApi, logoutApi } from '@/api/login'
 import clientService from '@/api/ClientService'
+import authService from '@/api/AuthService'
 import i18n, { changeLocale } from '@/i18n'
 import { setActiveLang } from '@/utils/cache/local-storage'
 import { LocaleLanguage } from 'types/common'
@@ -42,8 +43,9 @@ export const useUserStore = defineStore('user', () => {
     token.value = accessToken
   }
 
+  // auth/register returns a token. client/register did not: the cookie got 'undefined' and the next page was /404
   const register = async (params: any) => {
-    const res: any = await clientService.register(params)
+    const res = await authService.register(params)
     setToken(res.token)
     token.value = res.token
   }
