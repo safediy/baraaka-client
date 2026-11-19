@@ -9,6 +9,8 @@ import { useRouter } from 'vue-router'
 import NameDetails from './NameDetails.vue'
 import { useUserStore } from '@/store/modules/user'
 import { useI18n } from 'vue-i18n'
+import { isCaptchaFailed } from '@/utils/helpers'
+import ServerCaptcha from './ServerCaptcha.vue'
 
 const { t } = useI18n()
 const props = defineProps<{ phone: string }>()
@@ -22,6 +24,7 @@ const timer = ref(60)
 const isResendVisible = ref(false)
 let interval: any = null
 const isRegister = ref(false)
+const captchaRef = ref<InstanceType<typeof ServerCaptcha> | null>(null)
 
 watch(otpInput, () => {
   // CLI-07: do not log the OTP value (sensitive credential).
@@ -78,6 +81,8 @@ const handleOnComplete = async () => {
 }
 
 const handleResendOtpCode = async () => {
+  if (isLoading.value) return
+  if (!captchaRef.value?.validate()) return
   isLoading.value = true
   bindValue.value = ''
   otpInput.value = ''
@@ -85,12 +90,18 @@ const handleResendOtpCode = async () => {
     await AuthService.sendVerificationCode({
       phone: props?.phone.replace(/\D/g, ''),
       type: 'REGISTER',
-      companyCode: REGISTER_COMPANY_CODE
+      companyCode: REGISTER_COMPANY_CODE,
+      captchaId: captchaRef.value.captchaId,
+      captchaAnswer: captchaRef.value.captchaAnswer.trim()
     })
     ElMessage.success('Tasdiqlash kodi yuborildi')
     startTimer()
   } catch (error) {
     console.log(error)
+    // A captcha is single-use: always fetch a new one after a failed attempt
+    const failed = isCaptchaFailed(error)
+    await captchaRef.value?.reload()
+    if (failed) captchaRef.value?.setError(t('captcha.incorrect') || 'Incorrect captcha')
   } finally {
     isLoading.value = false
   }
@@ -143,7 +154,10 @@ onMounted(() => {
       <button v-if="!isResendVisible" class="timer-btn" type="button">
         {{ formattedTimer }} {{ t('resendAfter') }}
       </button>
-      <el-button v-else class="submit-btn" @click="handleResendOtpCode">{{ t('resend') }}</el-button>
+      <template v-else>
+        <ServerCaptcha ref="captchaRef" :disabled="isLoading" />
+        <el-button class="submit-btn" :loading="isLoading" @click="handleResendOtpCode">{{ t('resend') }}</el-button>
+      </template>
     </el-form>
   </el-card>
 

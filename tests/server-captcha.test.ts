@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
@@ -143,5 +143,65 @@ describe('legacy secret removal', () => {
         if (readFileSync(join(root, f), 'utf8').includes('VITE_SMS_SECRET_KEY')) hits.push(f)
       } catch {}
     expect(hits).toEqual([])
+  })
+})
+
+describe('OTP resend goes through the server captcha', () => {
+  beforeEach(() => {
+    getCaptchaMock.mockReset()
+    sendCodeMock.mockReset()
+    sendCodeMock.mockResolvedValue({})
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+  })
+  afterEach(() => vi.useRealTimers())
+
+  async function mountOtp() {
+    vi.resetModules()
+    vi.doMock('@/api/AuthService', () => ({
+      default: {
+        getCaptcha: (...a: any[]) => getCaptchaMock(...a),
+        sendVerificationCode: (...a: any[]) => sendCodeMock(...a)
+      }
+    }))
+    vi.doMock('vue-router', () => ({ useRouter: () => ({ push: vi.fn() }) }))
+    vi.doMock('vue3-otp-input', () => ({ default: { template: '<div />' } }))
+    vi.doMock('@/views/auth/NameDetails.vue', () => ({ default: { template: '<div />' } }))
+    vi.doMock('@/views/auth/ServerCaptcha.vue', async () => vi.importActual('@/views/auth/ServerCaptcha.vue'))
+    const Otp = (await vi.importActual<any>('@/views/auth/OtpVerification.vue')).default
+    const w = mount(Otp, { props: { phone: '901234567' }, global: { stubs } })
+    await flushPromises()
+    expect(w.find('.captcha-input').exists()).toBe(false)
+    vi.advanceTimersByTime(61000)
+    await flushPromises()
+    return w
+  }
+
+  it('resend sends captchaId/captchaAnswer; failure reloads a new captcha', async () => {
+    getCaptchaMock.mockResolvedValueOnce({ captchaId: 'r-1', svg: svgA })
+    getCaptchaMock.mockResolvedValueOnce({ captchaId: 'r-2', svg: svgB })
+    sendCodeMock.mockRejectedValueOnce({ response: { data: { message: 'CAPTCHA_FAILED' } } })
+    const w = await mountOtp()
+    expect(getCaptchaMock).toHaveBeenCalledTimes(1)
+    await w.find('.captcha-input').setValue('7')
+    await w.findAll('button.submit-btn').at(-1)!.trigger('click')
+    await flushPromises()
+    expect(sendCodeMock.mock.calls[0][0]).toMatchObject({ captchaId: 'r-1', captchaAnswer: '7', type: 'REGISTER' })
+    expect(sendCodeMock.mock.calls[0][0]).not.toHaveProperty('_csrf')
+    expect(getCaptchaMock).toHaveBeenCalledTimes(2)
+    expect((w.find('.captcha-input').element as HTMLInputElement).value).toBe('')
+    await w.find('.captcha-input').setValue('8')
+    await w.findAll('button.submit-btn').at(-1)!.trigger('click')
+    await flushPromises()
+    expect(sendCodeMock.mock.calls[1][0].captchaId).toBe('r-2')
+  })
+})
+
+describe('isCaptchaFailed', () => {
+  it('matches only response.data.message === CAPTCHA_FAILED', async () => {
+    const { isCaptchaFailed } = await import('@/utils/helpers')
+    expect(isCaptchaFailed({ response: { data: { message: 'CAPTCHA_FAILED' } } })).toBe(true)
+    expect(isCaptchaFailed({ response: { data: { message: 'OTHER' } } })).toBe(false)
+    expect(isCaptchaFailed({ response: { data: 'CAPTCHA_FAILED' } })).toBe(false)
+    expect(isCaptchaFailed(null)).toBe(false)
   })
 })

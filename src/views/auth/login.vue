@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { REGISTER_COMPANY_CODE } from '@/constants/company'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import './index.css'
 import { useI18n } from 'vue-i18n'
@@ -15,7 +15,8 @@ import { useUserStore } from '@/store/modules/user'
 import { getActiveLang } from '@/utils/cache/local-storage'
 import ClientService from '@/api/ClientService'
 import { formatPhoneInput } from '@/utils'
-import { isCaptchaFailed, svgToBase64 } from '@/utils/helpers'
+import { isCaptchaFailed } from '@/utils/helpers'
+import ServerCaptcha from '@/views/auth/ServerCaptcha.vue'
 const { t } = useI18n()
 const userStore = useUserStore()
 
@@ -24,12 +25,7 @@ const isLoading = ref<boolean>(false)
 const showOtpVerification = ref<boolean>(false)
 const language = ref(userStore.language || getActiveLang())
 
-// Captcha state (server-issued: GET /auth/captcha)
-const captchaId = ref('')
-const captchaSvg = ref('')
-const captchaUserInput = ref('')
-const captchaError = ref('')
-const captchaLoading = ref(false)
+const captchaRef = ref<InstanceType<typeof ServerCaptcha> | null>(null)
 
 const languages = ref([
   { label: "O'zbekcha", value: 'uz', flag: uzFlag },
@@ -37,36 +33,6 @@ const languages = ref([
   { label: 'English', value: 'en', flag: engFlag },
   { label: '中国人', value: 'zh', flag: chinaFlag }
 ])
-
-// Load a fresh captcha; the previous captchaId is dropped so it is never resent
-const loadCaptcha = async () => {
-  captchaLoading.value = true
-  captchaId.value = ''
-  captchaSvg.value = ''
-  captchaUserInput.value = ''
-  captchaError.value = ''
-  try {
-    const res = await AuthService.getCaptcha()
-    captchaId.value = res.captchaId
-    captchaSvg.value = res.svg
-  } catch (error) {
-    console.log('captcha error', error)
-    captchaError.value = t('captcha.loadFailed') || 'Captcha could not be loaded'
-  } finally {
-    captchaLoading.value = false
-  }
-}
-
-const validateCaptcha = () => {
-  if (!captchaId.value || !captchaUserInput.value.trim()) {
-    captchaError.value = t('captcha.required') || 'Captcha is required'
-    return false
-  }
-  captchaError.value = ''
-  return true
-}
-
-onMounted(loadCaptcha)
 
 const handleSubmit = async () => {
   if (isLoading.value) return
@@ -80,7 +46,7 @@ const handleSubmit = async () => {
   }
 
   // Validate captcha
-  if (!validateCaptcha()) {
+  if (!captchaRef.value?.validate()) {
     isLoading.value = false
     return
   }
@@ -90,8 +56,8 @@ const handleSubmit = async () => {
       phone: phoneNumber.value.replace(/\D/g, ''),
       type: 'REGISTER',
       companyCode: REGISTER_COMPANY_CODE,
-      captchaId: captchaId.value,
-      captchaAnswer: captchaUserInput.value.trim()
+      captchaId: captchaRef.value!.captchaId,
+      captchaAnswer: captchaRef.value!.captchaAnswer.trim()
     })
     ElMessage.success(t('message.sendCode'))
     showOtpVerification.value = true
@@ -99,8 +65,8 @@ const handleSubmit = async () => {
     console.log('error', error)
     // A captcha is single-use: always fetch a new one after a failed attempt
     const failed = isCaptchaFailed(error)
-    await loadCaptcha()
-    if (failed) captchaError.value = t('captcha.incorrect') || 'Incorrect captcha'
+    await captchaRef.value?.reload()
+    if (failed) captchaRef.value?.setError(t('captcha.incorrect') || 'Incorrect captcha')
   } finally {
     isLoading.value = false
   }
@@ -186,35 +152,7 @@ const changeLanguage = async (lang: any) => {
           </div>
         </el-form-item>
 
-        <!-- Captcha Section -->
-        <el-form-item class="form-label" :label="t('captcha.title') || 'Arifmetik ifoda'">
-          <div class="captcha-container">
-            <div class="captcha-expression">
-              <img
-                v-if="captchaSvg"
-                class="captcha-img"
-                alt="captcha"
-                :src="'data:image/svg+xml;base64,' + svgToBase64(captchaSvg)"
-              />
-              <button type="button" class="captcha-refresh" @click="loadCaptcha" :disabled="isLoading || captchaLoading">
-                <el-icon>
-                  <Refresh />
-                </el-icon>
-              </button>
-            </div>
-            <input
-              class="captcha-input"
-              v-model="captchaUserInput"
-              type="text"
-              inputmode="numeric"
-              :placeholder="t('captcha.placeholder') || 'Javobni kiriting'"
-              @input="captchaError = ''"
-              maxlength="4"
-            />
-          </div>
-          <div v-if="captchaError" class="captcha-error">{{ captchaError }}</div>
-        </el-form-item>
-
+        <ServerCaptcha ref="captchaRef" :disabled="isLoading" />
         <el-button native-type="submit" :loading="isLoading" class="submit-btn">{{
           t('continue')
         }}</el-button>
@@ -370,81 +308,6 @@ const changeLanguage = async (lang: any) => {
   }
 }
 
-.captcha-container {
-  width: 100%;
-  display: flex;
-  gap: 8px;
-}
-
-.captcha-expression {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 15px;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  height: 45px;
-  width: 170px;
-  background-color: #f9fafb;
-}
-
-.captcha-img {
-  height: 36px;
-  max-width: 110px;
-  object-fit: contain;
-}
-
-.captcha-refresh {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background-color: #e5e7eb;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .el-icon {
-    font-size: 16px;
-    color: #6b7280;
-  }
-}
-
-.captcha-input {
-  width: 100%;
-  height: 45px;
-  padding: 0 15px;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  outline: none;
-  @include f-style(15px, 500, #111827);
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    border-color: #030712;
-  }
-
-  &::placeholder {
-    @include f-style(15px, 400, #9ca3af);
-  }
-}
-
-.captcha-error {
-  @include f-style(12px, 400, #ef4444);
-  margin-top: 4px;
-  padding-left: 4px;
-}
-
 .submit-btn {
   @include f-style(15px, 500, #fff);
   width: 100%;
@@ -556,11 +419,6 @@ const changeLanguage = async (lang: any) => {
     }
   }
 
-  .captcha-expression {
-    padding: 0 13px;
-    height: 42px;
-  }
-
 
   .captcha-input {
     height: 42px;
@@ -613,11 +471,6 @@ const changeLanguage = async (lang: any) => {
     .phone-input {
       @include f-style(13px, 500, #111827);
     }
-  }
-
-  .captcha-expression {
-    padding: 0 13px;
-    height: 42px;
   }
 
 
