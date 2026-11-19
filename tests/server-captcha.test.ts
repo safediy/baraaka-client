@@ -38,6 +38,7 @@ const stubs = {
   'el-button': { template: '<button class="submit-btn" type="submit"><slot /></button>' }
 }
 
+const CAPTCHA_ERR = { response: { status: 401, data: { statusCode: 401, error: 'CAPTCHA_FAILED', message: { ru: 'Пожалуйста, попробуйте снова.', uz: "Iltimos, qayta urinib ko'ring.", en: 'Please try again.' } } } }
 const svgA = '<svg xmlns="http://www.w3.org/2000/svg"><text>3 + 4 = ?</text></svg>'
 const svgB = '<svg xmlns="http://www.w3.org/2000/svg"><text>9 − 2 = ?</text></svg>'
 
@@ -90,7 +91,7 @@ describe('server captcha on login page', () => {
   })
 
   it('on CAPTCHA_FAILED reloads captcha, clears the answer and never resends the old captchaId', async () => {
-    sendCodeMock.mockRejectedValueOnce({ response: { data: { message: 'CAPTCHA_FAILED' } } })
+    sendCodeMock.mockRejectedValueOnce(CAPTCHA_ERR)
     getCaptchaMock.mockResolvedValueOnce({ captchaId: 'id-2', svg: svgB })
     const w = await mountLogin()
     await fillAndSubmit(w, '5')
@@ -100,6 +101,14 @@ describe('server captcha on login page', () => {
     expect(sendCodeMock).toHaveBeenCalledTimes(2)
     expect(sendCodeMock.mock.calls[0][0].captchaId).toBe('id-1')
     expect(sendCodeMock.mock.calls[1][0].captchaId).toBe('id-2')
+  })
+
+  it('shows the incorrect captcha message after CAPTCHA_FAILED', async () => {
+    sendCodeMock.mockRejectedValueOnce(CAPTCHA_ERR)
+    getCaptchaMock.mockResolvedValueOnce({ captchaId: 'id-2', svg: svgB })
+    const w = await mountLogin()
+    await fillAndSubmit(w, '5')
+    expect(w.find('.captcha-error').text()).toBe('captcha.incorrect')
   })
 
   it('refresh button fetches a new captcha', async () => {
@@ -179,7 +188,7 @@ describe('OTP resend goes through the server captcha', () => {
   it('resend sends captchaId/captchaAnswer; failure reloads a new captcha', async () => {
     getCaptchaMock.mockResolvedValueOnce({ captchaId: 'r-1', svg: svgA })
     getCaptchaMock.mockResolvedValueOnce({ captchaId: 'r-2', svg: svgB })
-    sendCodeMock.mockRejectedValueOnce({ response: { data: { message: 'CAPTCHA_FAILED' } } })
+    sendCodeMock.mockRejectedValueOnce(CAPTCHA_ERR)
     const w = await mountOtp()
     expect(getCaptchaMock).toHaveBeenCalledTimes(1)
     await w.find('.captcha-input').setValue('7')
@@ -197,10 +206,11 @@ describe('OTP resend goes through the server captcha', () => {
 })
 
 describe('isCaptchaFailed', () => {
-  it('matches only response.data.message === CAPTCHA_FAILED', async () => {
+  it('matches only response.data.error === CAPTCHA_FAILED', async () => {
     const { isCaptchaFailed } = await import('@/utils/helpers')
-    expect(isCaptchaFailed({ response: { data: { message: 'CAPTCHA_FAILED' } } })).toBe(true)
-    expect(isCaptchaFailed({ response: { data: { message: 'OTHER' } } })).toBe(false)
+    expect(isCaptchaFailed(CAPTCHA_ERR)).toBe(true)
+    expect(isCaptchaFailed({ response: { data: { error: 'OTHER', message: {} } } })).toBe(false)
+    expect(isCaptchaFailed({ response: { data: { message: 'CAPTCHA_FAILED' } } })).toBe(false)
     expect(isCaptchaFailed({ response: { data: 'CAPTCHA_FAILED' } })).toBe(false)
     expect(isCaptchaFailed(null)).toBe(false)
   })

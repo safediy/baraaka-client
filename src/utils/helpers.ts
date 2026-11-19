@@ -38,8 +38,8 @@ export function svgToBase64(svg: string): string {
   return btoa(binary)
 }
 
-/** True when the API reports a wrong/expired server captcha (Nest UnauthorizedException message). */
+/** True when the API reports a wrong/expired server captcha: body is {statusCode, error: 'CAPTCHA_FAILED', message: {ru,uz,en}}. */
 export function isCaptchaFailed(error: unknown): boolean {
-  const message = (error as { response?: { data?: { message?: unknown } } } | null)?.response?.data?.message
-  return message === 'CAPTCHA_FAILED'
+  const code = (error as { response?: { data?: { error?: unknown } } } | null)?.response?.data?.error
+  return code === 'CAPTCHA_FAILED'
 }
