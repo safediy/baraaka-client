@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { REGISTER_COMPANY_CODE } from '@/constants/company'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import './index.css'
@@ -114,7 +115,7 @@ const handleSubmit = async () => {
     await AuthService.sendVerificationCode({
       phone: phoneNumber.value.replace(/\D/g, ''),
       type: 'REGISTER',
-      companyCode: '077',
+      companyCode: REGISTER_COMPANY_CODE,
       cProvider: 'math_arithmetic',
       _csrf: generateHmacHashKey(Number(captchaUserInput.value))
     })

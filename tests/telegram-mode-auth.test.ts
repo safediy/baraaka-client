@@ -97,6 +97,16 @@ describe('bot_type on auth calls', () => {
     expect(requestMock.mock.calls).toHaveLength(2)
     for (const call of requestMock.mock.calls) expect(call[0].headers).toEqual({ bot_type: 'B2C' })
   })
+
+  it('register sends the same companyCode as the OTP send (login.vue)', async () => {
+    const { REGISTER_COMPANY_CODE } = await import('@/constants/company')
+    const ClientService = (await import('@/api/ClientService')).default
+    await ClientService.register({ name: 'a', phoneNumber: '1', verificationCode: '1111' })
+    expect(requestMock.mock.calls[0][0].data).toMatchObject({ name: 'a', companyCode: REGISTER_COMPANY_CODE })
+    const loginVue = readFileSync(join(__dirname, '..', 'src/views/auth/login.vue'), 'utf8')
+    expect(loginVue).toContain('companyCode: REGISTER_COMPANY_CODE')
+    expect(REGISTER_COMPANY_CODE).toBe('077')
+  })
 })
 
 describe('tokenKey handoff and router guard', () => {

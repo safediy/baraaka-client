@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { REGISTER_COMPANY_CODE } from '@/constants/company'
 import { ref, computed, watch, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import Vue3OtpInput from 'vue3-otp-input'
@@ -84,7 +85,7 @@ const handleResendOtpCode = async () => {
     await AuthService.sendVerificationCode({
       phone: props?.phone.replace(/\D/g, ''),
       type: 'REGISTER',
-      companyCode: '077'
+      companyCode: REGISTER_COMPANY_CODE
     })
     ElMessage.success('Tasdiqlash kodi yuborildi')
     startTimer()
