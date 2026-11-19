@@ -143,9 +143,11 @@ describe('tokenKey handoff and router guard', () => {
     vi.doMock('@/router', () => ({
       default: { beforeEach: (fn: any) => (guard = fn), afterEach: vi.fn(), addRoute: vi.fn() }
     }))
-    vi.doMock('@/store/modules/user', () => ({
-      useUserStoreHook: () => ({ role: 'CLIENT', token: 'x', getInfo: vi.fn(), resetToken: vi.fn() })
-    }))
+    const userStoreState: any = { role: 'CLIENT', token: '', getInfo: vi.fn(), resetToken: vi.fn() }
+    userStoreState.setSessionToken = (t: string) => {
+      userStoreState.token = t
+    }
+    vi.doMock('@/store/modules/user', () => ({ useUserStoreHook: () => userStoreState }))
     vi.doMock('@/store/modules/permission', () => ({ usePermissionStoreHook: () => ({}) }))
     vi.doMock('@/hooks/useRouteListener', () => ({ setRouteChange: vi.fn() }))
     vi.doMock('@/hooks/useTitle', () => ({ useTitle: () => ({ setTitle: vi.fn() }) }))
@@ -162,6 +164,12 @@ describe('tokenKey handoff and router guard', () => {
     await guard({ path: '/profil', query: { tokenKey: 'T' } }, {}, next)
     expect(setTokenMock).toHaveBeenCalledWith('T')
     expect(next).not.toHaveBeenCalledWith('/login')
+    expect(userStoreState.token).toBe('T')
+
+    next.mockClear()
+    await guard({ path: '/profil', query: {} }, {}, next)
+    expect(next).not.toHaveBeenCalledWith({ path: '/login' })
+    expect(next).toHaveBeenCalled()
   })
 })
 

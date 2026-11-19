@@ -23,7 +23,9 @@ router.beforeEach(async (to, _from, next) => {
 
   const userStore = useUserStoreHook()
   const permissionStore = usePermissionStoreHook()
-  const token = consumeTokenKey(to.query.tokenKey) ?? getToken() ?? getTokenLocal()
+  const handedOffToken = consumeTokenKey(to.query.tokenKey)
+  if (handedOffToken) userStore.setSessionToken(handedOffToken)
+  const token = handedOffToken ?? getToken() ?? getTokenLocal()
 
   if (!token) {
     if (isWhiteList(to)) {

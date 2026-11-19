@@ -36,6 +36,12 @@ export const useUserStore = defineStore('user', () => {
     phone.value = phoneNumber
   }
 
+  /** Bot-issued token (Telegram tokenKey handoff): store it and mark the session logged in. */
+  const setSessionToken = (accessToken: string) => {
+    setToken(accessToken)
+    token.value = accessToken
+  }
+
   const register = async (params: any) => {
     const res: any = await clientService.register(params)
     setToken(res.token)
@@ -113,6 +119,7 @@ export const useUserStore = defineStore('user', () => {
     phone,
     login,
     otpLogin,
+    setSessionToken,
     register,
     getInfo,
     updateClientDetails,
