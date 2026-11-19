@@ -147,7 +147,7 @@ describe('tokenKey handoff and router guard', () => {
     expect(setTokenMock).not.toHaveBeenCalled()
   })
 
-  it('guard: no token redirects to /login; tokenKey does not', async () => {
+  it('guard: no token redirects to /login with the page in redirect; tokenKey does not', async () => {
     setTelegram(INIT_DATA)
     let guard: any
     vi.doMock('@/router', () => ({
@@ -166,14 +166,14 @@ describe('tokenKey handoff and router guard', () => {
     await import('@/router/permission')
 
     const next = vi.fn()
-    await guard({ path: '/profil', query: {} }, {}, next)
-    expect(next).toHaveBeenCalledWith('/login')
+    await guard({ path: '/profil', fullPath: '/profil', query: {} }, {}, next)
+    expect(next).toHaveBeenCalledWith({ path: '/login', query: { redirect: '/profil' } })
 
     next.mockClear()
     window.history.pushState({}, '', '/profil?tokenKey=T')
     await guard({ path: '/profil', query: { tokenKey: 'T' } }, {}, next)
     expect(setTokenMock).toHaveBeenCalledWith('T')
-    expect(next).not.toHaveBeenCalledWith('/login')
+    expect(next).toHaveBeenCalledWith()
     expect(userStoreState.token).toBe('T')
 
     next.mockClear()

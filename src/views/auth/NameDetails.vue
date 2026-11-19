@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
 import { useI18n } from 'vue-i18n'
+import { goAfterLogin } from '@/utils/return-path'
 
 const { t } = useI18n()
 
@@ -37,7 +38,7 @@ const handleSaveDetails = async () => {
   try {
     await useUserStore().register(formData.value)
     ElMessage.success("Foydalanuvchi muvaffaqiyatli ro'yxatdan o'tdi.")
-    router.push('/home')
+    goAfterLogin(router, '/home')
   } catch (error) {
     console.log(error)
   } finally {

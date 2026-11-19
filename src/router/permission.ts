@@ -9,6 +9,7 @@ import isWhiteList from '@/config/white-list'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { consumeTokenKey } from '@/utils/telegram-token'
+import { loginLocation } from '@/utils/return-path'
 const { setTitle } = useTitle()
 
 NProgress.configure({ showSpinner: false })
@@ -32,7 +33,8 @@ router.beforeEach(async (to, _from, next) => {
       next()
       return
     }
-    next('/login')
+    // The page being opened (for example a bot deep link) is kept in `redirect` and opened after login
+    next(loginLocation(to))
     return
   }
 

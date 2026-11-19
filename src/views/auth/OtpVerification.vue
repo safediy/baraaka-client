@@ -11,6 +11,7 @@ import { useUserStore } from '@/store/modules/user'
 import { useI18n } from 'vue-i18n'
 import { isCaptchaFailed } from '@/utils/helpers'
 import ServerCaptcha from './ServerCaptcha.vue'
+import { goAfterLogin } from '@/utils/return-path'
 
 const { t } = useI18n()
 const props = defineProps<{ phone: string }>()
@@ -68,7 +69,8 @@ const handleOnComplete = async () => {
         phoneNumber: props?.phone,
         accessToken: response.token
       })
-      router.push('/')
+      // Came from a bot deep link (/login?redirect=...): open that page
+      goAfterLogin(router)
     } else {
       isRegister.value = true
     }
