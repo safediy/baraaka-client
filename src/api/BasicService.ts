@@ -16,11 +16,12 @@ export default class BasicService {
     })
   }
 
-  async post<T>(method: string, data: any) {
+  async post<T>(method: string, data: any, headers?: Record<string, string>) {
     return request<T>({
       url: `${this.prefix}/${method}`,
       method: 'post',
-      data
+      data,
+      ...(headers ? { headers } : {})
     })
   }
 

@@ -1,4 +1,5 @@
 import BasicService from '@/api/BasicService'
+import { botTypeHeaders } from '@/utils/helpers'
 import { CashbackItemDTO, ClientInfoType } from 'types/api'
 
 class ClientService extends BasicService {
@@ -7,7 +8,7 @@ class ClientService extends BasicService {
   }
 
   register(params: any) {
-    return this.post('register', params)
+    return this.post('register', params, botTypeHeaders())
   }
 
   updatePassword(params: { id?: number; password: string }) {

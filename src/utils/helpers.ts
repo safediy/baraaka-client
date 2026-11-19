@@ -7,10 +7,24 @@ export function sortUnpaidFirst(items: WaybillInfoDTO[]) {
 }
 
 export function parseInitDataTelegram(initData: string) {
-  const params = new URLSearchParams(initData)
+  try {
+    const user = new URLSearchParams(initData).get('user')
+    if (!user) return null
+    const userData = JSON.parse(user)
+    return userData && typeof userData === 'object' ? userData : null
+  } catch {
+    return null
+  }
+}
 
-  const userData = JSON.parse(decodeURIComponent(params.get('user') as string))
-  return userData
+/** bot_type is a public routing hint (P2C/B2C), not a secret. Sent only when configured. */
+export function botTypeHeaders(): Record<string, string> | undefined {
+  const botType = import.meta.env.VITE_BOT_TYPE as string | undefined
+  return botType ? { bot_type: botType } : undefined
+}
+
+export function isTelegramMode(): boolean {
+  return Boolean(window.Telegram?.WebApp?.initData)
 }
 
 export function sumtoTin(sum: number): number {

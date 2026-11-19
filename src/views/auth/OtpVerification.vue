@@ -8,7 +8,6 @@ import { useRouter } from 'vue-router'
 import NameDetails from './NameDetails.vue'
 import { useUserStore } from '@/store/modules/user'
 import { useI18n } from 'vue-i18n'
-import { parseInitDataTelegram } from '@/utils/helpers'
 
 const { t } = useI18n()
 const props = defineProps<{ phone: string }>()
@@ -55,13 +54,9 @@ const handleChange = (otpCode: string) => {
 const handleOnComplete = async () => {
   isLoading.value = true
   try {
-    const webApp = window.Telegram.WebApp
-    const telegramUser = parseInitDataTelegram(webApp.initData)
-
     const response: any = await AuthService.verifyLogin({
       phone: props?.phone,
-      verificationCode: bindValue.value,
-      chatId: telegramUser?.id
+      verificationCode: bindValue.value
     })
     if (response.token) {
       ElMessage.success('Tasdiqlandi')

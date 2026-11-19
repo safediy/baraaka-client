@@ -8,7 +8,7 @@ import routeSettings from '@/config/route'
 import isWhiteList from '@/config/white-list'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { removeConfigLayout } from '@/utils/cache/local-storage'
+import { consumeTokenKey } from '@/utils/telegram-token'
 const { setTitle } = useTitle()
 
 NProgress.configure({ showSpinner: false })
@@ -18,36 +18,20 @@ NProgress.configure({ showSpinner: false })
 // boundary. Every protected resource/action must be independently authorized by
 // the backend on each request; the token/role checks below only decide what the
 // SPA renders, not what the user is actually allowed to do.
-let isError = false
 router.beforeEach(async (to, _from, next) => {
   NProgress.start()
 
   const userStore = useUserStoreHook()
   const permissionStore = usePermissionStoreHook()
-  const token = getToken() ?? getTokenLocal()
-  const isTelegram = window.Telegram.WebApp.initData
+  const token = consumeTokenKey(to.query.tokenKey) ?? getToken() ?? getTokenLocal()
 
   if (!token) {
-    if (isTelegram && !isError) {
-      try {
-        isError = false
-        removeConfigLayout()
-        await userStore.getInfo()
-      } catch (error) {
-        next('/login')
-        isError = true
-        return
-      }
+    if (isWhiteList(to)) {
       next()
       return
-    } else {
-      if (isWhiteList(to)) {
-        next()
-        return
-      }
-      next('/login')
-      return
     }
+    next('/login')
+    return
   }
 
   if (to.path === '/login') {
