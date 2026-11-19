@@ -1,15 +1,9 @@
 import BasicService from '@/api/BasicService'
-import { REGISTER_COMPANY_CODE } from '@/constants/company'
-import { botTypeHeaders } from '@/utils/helpers'
 import { CashbackItemDTO, ClientInfoType } from 'types/api'
 
 class ClientService extends BasicService {
   constructor() {
     super('client')
-  }
-
-  register(params: any) {
-    return this.post('register', { ...params, companyCode: REGISTER_COMPANY_CODE }, botTypeHeaders())
   }
 
   updatePassword(params: { id?: number; password: string }) {
