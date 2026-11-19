@@ -209,6 +209,11 @@ export interface SendVerificationCodeRequest {
   phone: string
   type: 'REGISTER' | 'LOGIN' | 'RESET_PASSWORD'
   companyCode: string
-  cProvider?: string
-  _csrf?: string
+  captchaId?: string
+  captchaAnswer?: string
+}
+
+export interface CaptchaResponse {
+  captchaId: string
+  svg: string
 }

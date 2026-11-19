@@ -134,6 +134,7 @@
   "captcha.placeholder": "Javobni kiriting",
   "captcha.required": "Javobni kiriting",
   "captcha.incorrect": "Javob noto'g'ri",
+  "captcha.loadFailed": "Captcha yuklanmadi",
   "updatePassword": "Parolni o'zgartirish",
   "nothing": "Yo'q",
   "go.back": "Qaytish",

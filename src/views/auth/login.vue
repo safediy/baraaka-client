@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { REGISTER_COMPANY_CODE } from '@/constants/company'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import './index.css'
 import { useI18n } from 'vue-i18n'
@@ -15,7 +15,7 @@ import { useUserStore } from '@/store/modules/user'
 import { getActiveLang } from '@/utils/cache/local-storage'
 import ClientService from '@/api/ClientService'
 import { formatPhoneInput } from '@/utils'
-import { generateHmacHashKey } from '@/utils/helpers'
+import { isCaptchaFailed, svgToBase64 } from '@/utils/helpers'
 const { t } = useI18n()
 const userStore = useUserStore()
 
@@ -24,11 +24,12 @@ const isLoading = ref<boolean>(false)
 const showOtpVerification = ref<boolean>(false)
 const language = ref(userStore.language || getActiveLang())
 
-// Captcha state
-const captchaExpression = ref('')
-const captchaAnswer = ref('')
+// Captcha state (server-issued: GET /auth/captcha)
+const captchaId = ref('')
+const captchaSvg = ref('')
 const captchaUserInput = ref('')
 const captchaError = ref('')
+const captchaLoading = ref(false)
 
 const languages = ref([
   { label: "O'zbekcha", value: 'uz', flag: uzFlag },
@@ -37,65 +38,38 @@ const languages = ref([
   { label: '中国人', value: 'zh', flag: chinaFlag }
 ])
 
-// Generate captcha
-const generateCaptcha = () => {
-  const operations = ['+', '-', '×']
-  const operation = operations[Math.floor(Math.random() * operations.length)]
-
-  let num1: number, num2: number, answer: number, expression: string
-
-  switch (operation) {
-    case '+':
-      num1 = Math.floor(Math.random() * 10) + 1
-      num2 = Math.floor(Math.random() * 10) + 1
-      answer = num1 + num2
-      expression = `${num1} + ${num2} =`
-      break
-    case '-':
-      num1 = Math.floor(Math.random() * 10) + 5
-      num2 = Math.floor(Math.random() * 5) + 1
-      answer = num1 - num2
-      expression = `${num1} - ${num2} =`
-      break
-    case '×':
-      num1 = Math.floor(Math.random() * 9) + 1
-      num2 = Math.floor(Math.random() * 9) + 1
-      answer = num1 * num2
-      expression = `${num1} × ${num2} =`
-      break
-    default:
-      num1 = 1
-      num2 = 1
-      answer = 2
-      expression = '1 + 1 ='
-  }
-
-  captchaExpression.value = expression
-  captchaAnswer.value = answer.toString()
+// Load a fresh captcha; the previous captchaId is dropped so it is never resent
+const loadCaptcha = async () => {
+  captchaLoading.value = true
+  captchaId.value = ''
+  captchaSvg.value = ''
   captchaUserInput.value = ''
   captchaError.value = ''
+  try {
+    const res = await AuthService.getCaptcha()
+    captchaId.value = res.captchaId
+    captchaSvg.value = res.svg
+  } catch (error) {
+    console.log('captcha error', error)
+    captchaError.value = t('captcha.loadFailed') || 'Captcha could not be loaded'
+  } finally {
+    captchaLoading.value = false
+  }
 }
 
-// Validate captcha
 const validateCaptcha = () => {
-  if (!captchaUserInput.value.trim()) {
+  if (!captchaId.value || !captchaUserInput.value.trim()) {
     captchaError.value = t('captcha.required') || 'Captcha is required'
     return false
   }
-
-  if (captchaUserInput.value.trim() !== captchaAnswer.value) {
-    captchaError.value = t('captcha.incorrect') || 'Incorrect captcha'
-    return false
-  }
-
   captchaError.value = ''
   return true
 }
 
-// Initialize captcha on component mount
-generateCaptcha()
+onMounted(loadCaptcha)
 
 const handleSubmit = async () => {
+  if (isLoading.value) return
   isLoading.value = true
 
   // Validate phone number
@@ -116,15 +90,17 @@ const handleSubmit = async () => {
       phone: phoneNumber.value.replace(/\D/g, ''),
       type: 'REGISTER',
       companyCode: REGISTER_COMPANY_CODE,
-      cProvider: 'math_arithmetic',
-      _csrf: generateHmacHashKey(Number(captchaUserInput.value))
+      captchaId: captchaId.value,
+      captchaAnswer: captchaUserInput.value.trim()
     })
     ElMessage.success(t('message.sendCode'))
     showOtpVerification.value = true
   } catch (error) {
     console.log('error', error)
-    // Generate new captcha on error
-    generateCaptcha()
+    // A captcha is single-use: always fetch a new one after a failed attempt
+    const failed = isCaptchaFailed(error)
+    await loadCaptcha()
+    if (failed) captchaError.value = t('captcha.incorrect') || 'Incorrect captcha'
   } finally {
     isLoading.value = false
   }
@@ -214,8 +190,13 @@ const changeLanguage = async (lang: any) => {
         <el-form-item class="form-label" :label="t('captcha.title') || 'Arifmetik ifoda'">
           <div class="captcha-container">
             <div class="captcha-expression">
-              <span class="captcha-text">{{ captchaExpression }}</span>
-              <button type="button" class="captcha-refresh" @click="generateCaptcha" :disabled="isLoading">
+              <img
+                v-if="captchaSvg"
+                class="captcha-img"
+                alt="captcha"
+                :src="'data:image/svg+xml;base64,' + svgToBase64(captchaSvg)"
+              />
+              <button type="button" class="captcha-refresh" @click="loadCaptcha" :disabled="isLoading || captchaLoading">
                 <el-icon>
                   <Refresh />
                 </el-icon>
@@ -228,13 +209,13 @@ const changeLanguage = async (lang: any) => {
               inputmode="numeric"
               :placeholder="t('captcha.placeholder') || 'Javobni kiriting'"
               @input="captchaError = ''"
-              maxlength="3"
+              maxlength="4"
             />
           </div>
           <div v-if="captchaError" class="captcha-error">{{ captchaError }}</div>
         </el-form-item>
 
-        <el-button native-type="submit" :loading="isLoading" class="submit-btn" @click="handleSubmit">{{
+        <el-button native-type="submit" :loading="isLoading" class="submit-btn">{{
           t('continue')
         }}</el-button>
       </el-form>
@@ -407,8 +388,10 @@ const changeLanguage = async (lang: any) => {
   background-color: #f9fafb;
 }
 
-.captcha-text {
-  @include f-style(15px, 500, #111827);
+.captcha-img {
+  height: 36px;
+  max-width: 110px;
+  object-fit: contain;
 }
 
 .captcha-refresh {
@@ -578,9 +561,6 @@ const changeLanguage = async (lang: any) => {
     height: 42px;
   }
 
-  .captcha-text {
-    @include f-style(14px, 500, #111827);
-  }
 
   .captcha-input {
     height: 42px;
@@ -640,9 +620,6 @@ const changeLanguage = async (lang: any) => {
     height: 42px;
   }
 
-  .captcha-text {
-    @include f-style(13px, 500, #111827);
-  }
 
   .captcha-input {
     height: 42px;

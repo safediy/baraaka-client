@@ -176,6 +176,7 @@
   "captcha.placeholder": "Please enter the answer",
   "captcha.required": "Please enter the answer",
   "captcha.incorrect": "Incorrect answer",
+  "captcha.loadFailed": "Captcha could not be loaded",
   "placeholder.confirmPassword": "Please enter password again",
   "updatePassword": "Update Password",
   "nothing": "Nothing",

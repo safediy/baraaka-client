@@ -160,6 +160,7 @@
   "captcha.placeholder": "请输入验证码",
   "captcha.required": "请输入验证码",
   "captcha.incorrect": "验证码错误",
+  "captcha.loadFailed": "验证码加载失败",
   "placeholder.confirmPassword": "请再次输入密码",
   "updatePassword": "修改密码",
   "nothing": "无",

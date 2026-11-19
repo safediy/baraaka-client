@@ -1,6 +1,6 @@
 import BasicService from './BasicService'
 import { botTypeHeaders } from '@/utils/helpers'
-import type { SendVerificationCodeRequest } from '../../types/api'
+import type { CaptchaResponse, SendVerificationCodeRequest } from '../../types/api'
 
 class AuthClientService extends BasicService {
   constructor() {
@@ -9,6 +9,10 @@ class AuthClientService extends BasicService {
 
   verifyLogin(data: any) {
     return this.post('verifyLogin', data, botTypeHeaders())
+  }
+
+  getCaptcha() {
+    return this.get<CaptchaResponse>('captcha')
   }
 
   sendVerificationCode(data: SendVerificationCodeRequest) {

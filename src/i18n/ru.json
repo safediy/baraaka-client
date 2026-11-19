@@ -185,6 +185,7 @@
   "captcha.placeholder": "Введите ответ",
   "captcha.required": "Введите ответ",
   "captcha.incorrect": "Неверный код",
+  "captcha.loadFailed": "Не удалось загрузить капчу",
   "trackingNumber": "Трек-номер",
   "trackingNumber.required": "Введите трек-номер",
   "trackingNumbers": "Номера треков",

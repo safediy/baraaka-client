@@ -10,7 +10,6 @@
   VITE_ROUTER_HISTORY = "hash"
   VITE_PUBLIC_PATH = "/"
   VITE_BOT_TYPE = "B2C"
-  VITE_SMS_SECRET_KEY = "0ad99cca986e2543751e88d0d063bdc4"
 
 # Izohdan chiqaramiz va pastga, alohida blok qilib yozamiz
 [[redirects]]

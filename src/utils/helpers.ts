@@ -1,5 +1,4 @@
 import { PayStatusEnum } from '@/constants/api'
-import CryptoJS from 'crypto-js'
 import { WaybillInfoDTO } from 'types/waybill'
 
 export function sortUnpaidFirst(items: WaybillInfoDTO[]) {
@@ -31,26 +30,21 @@ export function sumtoTin(sum: number): number {
   return sum * 100
 }
 
-export function generateHmacHash(access: string, secretKey: string): string {
-  return CryptoJS.HmacSHA256(access, secretKey).toString(CryptoJS.enc.Hex)
+/** Encodes an SVG string as base64 for a data: URL; UTF-8 safe (btoa alone throws on non-Latin1). */
+export function svgToBase64(svg: string): string {
+  const bytes = new TextEncoder().encode(svg)
+  let binary = ''
+  for (const byte of bytes) binary += String.fromCharCode(byte)
+  return btoa(binary)
 }
 
-export function generateHmacHashKey(verifyCode: number) {
-  // CLI-02 SECURITY (architectural): VITE_* vars are inlined into the browser
-  // bundle at build time, so VITE_SMS_SECRET_KEY is shipped to every client and is
-  // NOT actually secret. An attacker can extract it and forge the SMS _csrf hash.
-  // TRUE FIX (backend follow-up): perform this HMAC signing on a backend endpoint
-  // so the secret never reaches the browser. MANUAL ACTION REQUIRED: rotate
-  // VITE_SMS_SECRET_KEY once signing is server-side (current value already exposed
-  // in prior bundles). Tracked in docs/security.
-  const appKey = import.meta.env.VITE_SMS_SECRET_KEY as string
-
-  const unixtime = Math.floor(Date.now() / 1000)
-
-  const rawString = unixtime + ':' + verifyCode
-  const expectedHash = generateHmacHash(rawString, appKey)
-
-  const enCode = btoa(JSON.stringify({ _csrf: expectedHash, verifyCode, unixtime }))
-
-  return enCode
+/** True when an API error response reports a wrong/expired server captcha. */
+export function isCaptchaFailed(error: unknown): boolean {
+  const data = (error as { response?: { data?: unknown } } | null)?.response?.data
+  if (data === undefined || data === null) return false
+  try {
+    return (typeof data === 'string' ? data : JSON.stringify(data)).includes('CAPTCHA_FAILED')
+  } catch {
+    return false
+  }
 }

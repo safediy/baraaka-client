@@ -6,7 +6,6 @@ interface ImportMetaEnv {
   readonly GOOGLE_MAPS_KEY: string
   readonly VITE_NODE_ENV: 'staging' | 'development'
   readonly VITE_GOOGLE_API_KEY: string
-  readonly VITE_SMS_SECRET_KEY: string
   readonly VITE_BOT_TYPE?: string
 }
 
